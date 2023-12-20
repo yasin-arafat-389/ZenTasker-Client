@@ -1,79 +1,79 @@
 const WhyChooseUs = () => {
   return (
     <div>
-      <section className="py-10 bg-gray-50 sm:py-16 lg:py-24">
+      <section className="py-10 bg-[#fcf5ee] sm:py-16 lg:py-14">
         <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
           <div className="max-w-xl mx-auto text-center">
-            <div className="inline-flex px-4 py-1.5 mx-auto rounded-full bg-gradient-to-r from-fuchsia-600 to-blue-600">
-              <p className="text-xs font-semibold tracking-widest text-white uppercase">
-                10+ Years of experience
-              </p>
-            </div>
             <h2 className="mt-6 text-3xl font-bold leading-tight text-black sm:text-4xl lg:text-5xl">
-              Why Choose Us?
+              Our Amazing Fetaures
             </h2>
             <p className="mt-4 text-base leading-relaxed text-gray-600">
-              We are dedicated to making your event dreams a reality. With years
-              of experience and a passion for perfection, we handle every detail
-              with precision.
+              Unleash Productivity with the Intuitive Drag-and-Drop
+              Functionality, Revolutionizing the Way You Organize, Prioritize,
+              and Execute Tasks.
             </p>
           </div>
 
           <div className="grid grid-cols-1 gap-5 mt-12 sm:grid-cols-3 lg:mt-20 lg:gap-x-12">
-            <div className="transition-all duration-200 bg-base-100 shadow-xl hover:shadow-md">
+            <div className="transition-all duration-200 bg-cyan-50  shadow-xl hover:shadow-md rounded-lg">
               <div className="py-10 px-9">
                 <img
                   className="w-[20%]"
-                  src="https://i.ibb.co/G5mQfMc/satisfaction.png"
+                  src="https://i.ibb.co/729WS8R/drag-and-drop.png"
                   alt=""
                 />
                 <h3 className="mt-8 text-lg font-semibold text-black">
-                  Experience and Expertise
+                  Effortless Task Organization
                 </h3>
-                <p className="mt-4 text-base text-gray-600">
-                  With over 10 of experience in the event management industry,
-                  we bring a wealth of knowledge and expertise to every project.
-                  Our seasoned team has successfully organized a wide range of
-                  events, from intimate gatherings to large-scale conferences.
+                <p className="mt-4 text-base text-gray-800">
+                  Transform your work experience with our revolutionary
+                  drag-and-drop functionality. Easily rearrange tasks,
+                  prioritize deadlines, and adapt to changing priorities with a
+                  simple, intuitive interface. Our task manager empowers you to
+                  effortlessly organize your workload, putting you in control of
+                  your day like never before
                 </p>
               </div>
             </div>
 
-            <div className="transition-all duration-200 bg-base-100 shadow-xl hover:shadow-md">
+            <div className="transition-all duration-200 bg-cyan-50 shadow-xl hover:shadow-md rounded-lg">
               <div className="py-10 px-9">
                 <img
                   className="w-[20%]"
-                  src="https://i.ibb.co/G9y99Yy/user-preferences.png"
+                  src="https://i.ibb.co/QY5g0gt/updated.png"
                   alt=""
                 />
                 <h3 className="mt-8 text-lg font-semibold text-black">
-                  Personalized Approach
+                  Seamless Task Updates
                 </h3>
-                <p className="mt-4 text-base text-gray-600">
-                  We believe that every event is unique, just like our clients.
-                  Our approach is tailored to your specific needs and
-                  preferences. We take the time to listen to your vision, goals,
-                  and ideas, and then we craft a customized plan.
+                <p className="mt-4 text-base text-gray-800">
+                  Stay agile and responsive with our task {`manager's`}
+                  drag-and-drop update feature. Instantly modify task details,
+                  deadlines, and priorities by seamlessly dragging tasks to
+                  their new status. Keep your projects on track with the
+                  flexibility to adapt and refine your plan in real-time,
+                  ensuring your team is always in sync with the latest changes.
                 </p>
               </div>
             </div>
 
-            <div className="transition-all duration-200 bg-base-100 shadow-xl hover:shadow-md">
+            <div className="transition-all duration-200 bg-cyan-50 shadow-xl hover:shadow-md rounded-lg">
               <div className="py-10 px-9">
                 <img
                   className="w-[20%]"
-                  src="https://i.ibb.co/pX7J3P3/search.png"
+                  src="https://i.ibb.co/42QBKvQ/shuttle.png"
                   alt=""
                 />
                 <h3 className="mt-8 text-lg font-semibold text-black">
-                  Attention to Detail
+                  Boost Productivity With Ease
                 </h3>
-                <p className="mt-4 text-base text-gray-600">
-                  It is the little things that make a big difference. At [Your
-                  Event Management Company Name], we are meticulous about every
-                  detail, from venue selection and decor to logistics and
-                  scheduling. Our commitment to perfection ensures that your
-                  event runs seamlessly.
+                <p className="mt-4 text-base text-gray-800">
+                  Maximize your productivity by leveraging the intuitive
+                  drag-and-drop workflow of our task manager. Streamline your
+                  processes as you effortlessly move tasks through stages,
+                  adapting to project needs with unparalleled ease. Experience a
+                  fluid and dynamic work environment that enhances efficiency
+                  and propels you towards your goals.
                 </p>
               </div>
             </div>

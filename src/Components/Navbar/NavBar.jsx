@@ -25,7 +25,7 @@ function MyProfileMenu() {
       {user ? (
         <ProfileMenu />
       ) : (
-        <Link to="/sign-in">
+        <Link to="/login">
           <button className="loginBTN">
             <BiLogInCircle className="text-[20px]" />
             Sign In
@@ -70,20 +70,14 @@ function NavList() {
       </li>
 
       <li>
-        <NavLink to="/burger-builder" className="p-3 font-bold">
-          Burger Builder
+        <NavLink to="/who-is-it-for" className="p-3 font-bold">
+          Who is It For
         </NavLink>
       </li>
 
       <li>
-        <NavLink to="/browse-foods" className="p-3 font-bold">
-          Browse Food
-        </NavLink>
-      </li>
-
-      <li>
-        <NavLink to="/cart" className="p-3 font-bold">
-          Cart
+        <NavLink to="/pricing" className="p-3 font-bold">
+          Pricing
         </NavLink>
       </li>
     </ul>
@@ -103,7 +97,7 @@ export default function NavBar() {
   }, []);
 
   return (
-    <div className="mx-auto p-2 shadow-lg sticky top-0 bg-white z-10">
+    <div className="mx-auto p-2 shadow-lg sticky top-0 bg-[#EAECCC] z-10">
       <div className="w-[95%] mx-auto flex items-center text-blue-gray-900 justify-between">
         <img
           className="w-[200px]"
