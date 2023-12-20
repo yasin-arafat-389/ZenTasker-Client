@@ -1,7 +1,7 @@
 const Footer = () => {
   return (
     <div>
-      <footer className="px-4 divide-y bg-[#f3f2f0] text-[#000]">
+      <footer className="px-4 divide-y bg-[#FDFFAE] text-[#000]">
         <div className="container flex flex-col justify-between py-10 mx-auto space-y-8 lg:flex-row lg:space-y-0">
           <div className="lg:w-1/3">
             <a
@@ -11,7 +11,7 @@ const Footer = () => {
             >
               <img
                 className="w-[50%]"
-                src="https://i.ibb.co/pQPwRp5/evento-2.png"
+                src="https://i.ibb.co/7QqChWH/zentasker-removebg-preview.png"
                 alt=""
               />
             </a>
@@ -129,7 +129,7 @@ const Footer = () => {
           </div>
         </div>
         <div className="py-6 text-sm text-center text-[#000]">
-          © 2001 Eventistry Co. All rights reserved.
+          © 2001 ZenTasker Co. All rights reserved.
         </div>
       </footer>
     </div>
