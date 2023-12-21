@@ -1,68 +1,336 @@
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import { useContext, useState } from "react";
+import { authContext } from "../../Context/AuthContext";
+import { ImSpinner9 } from "react-icons/im";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardFooter,
+  Chip,
+  Dialog,
+  Input,
+  Textarea,
+  Typography,
+} from "@material-tailwind/react";
+import { CirclesWithBar } from "react-loader-spinner";
+import { MdDeleteForever } from "react-icons/md";
+import { Link } from "react-router-dom";
+import swal from "sweetalert";
+import toast from "react-hot-toast";
+
 const AllTasks = () => {
+  let { user } = useContext(authContext);
+
+  let {
+    data: myTasks = [],
+    isLoading: myTasksLoading,
+    refetch,
+  } = useQuery({
+    queryKey: ["myTasks"],
+    queryFn: async () => {
+      let res = await axios
+        .get(`http://localhost:5000/my-tasks?email=${user?.email}`)
+        .then();
+      return res.data;
+    },
+  });
+
+  // Task deletion operation
+  let handleDeleteTask = async (id) => {
+    swal({
+      title: "Are you sure you want to delete this task?",
+      icon: "warning",
+      buttons: true,
+      dangerMode: true,
+    }).then((willDelete) => {
+      if (willDelete) {
+        axios.delete(`http://localhost:5000/delete-task?id=${id}`).then(() => {
+          refetch();
+          toast.success(`Task has been deleted!!`, {
+            style: {
+              border: "2px solid green",
+              padding: "8px",
+              color: "#713200",
+            },
+            iconTheme: {
+              primary: "green",
+              secondary: "#FFFAEE",
+            },
+          });
+        });
+      }
+    });
+  };
+
+  // Task update operation
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const [updatedTask, setUpdatedTask] = useState({
+    title: "",
+    description: "",
+    deadline: "",
+    priority: "",
+  });
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setUpdatedTask((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  let handleOpenModal = async (data) => {
+    setOpen(!open);
+    setUpdatedTask(data);
+  };
+
+  let handleUpdateTask = async () => {
+    setLoading(true);
+    await axios
+      .post(`http://localhost:5000/update-task`, updatedTask)
+      .then(() => {
+        toast.success(`Task successfully updated`, {
+          style: {
+            border: "2px solid green",
+            padding: "8px",
+            color: "#713200",
+          },
+          iconTheme: {
+            primary: "green",
+            secondary: "#FFFAEE",
+          },
+        });
+        setLoading(false);
+        refetch();
+        setOpen(!open);
+      });
+  };
+
+  if (myTasksLoading) {
+    return (
+      <div className="flex h-screen justify-center items-center">
+        <CirclesWithBar
+          height="300"
+          width="300"
+          color="#4fa94d"
+          wrapperStyle={{}}
+          wrapperClass=""
+          visible={true}
+          outerCircleColor=""
+          innerCircleColor=""
+          barColor=""
+          ariaLabel="circles-with-bar-loading"
+        />
+      </div>
+    );
+  }
+
   return (
     <div>
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4">
-        {/* To Do */}
-        <div className="border-2 border-orange-400 rounded-lg ">
-          <div className="title bg-teal-300 rounded-md rounded-b-none">
-            <h1 className="text-2xl font-bold text-white text-center py-2">
-              To Do
-            </h1>
-          </div>
+      {myTasks.length === 0 ? (
+        <div className="flex flex-col justify-center items-center gap-7">
+          <img
+            src="https://i.ibb.co/gFyvdXD/unfinished-task-7557377-6168994.png"
+            className="w-[300px]"
+          />
+          <h1 className="text-2xl font-bold">You currently have no tasks</h1>
+          <Link to="/dashboard/add-task">
+            <Button className="bg-orange-500 text-black text-lg font-bold">
+              Add Task Now
+            </Button>
+          </Link>
+        </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4">
+            {/* To Do */}
+            <div className="rounded-lg ">
+              <div className="title bg-gray-500 rounded-md rounded-b-none">
+                <h1 className="text-2xl font-bold text-white text-center py-2">
+                  To Do
+                </h1>
+              </div>
 
-          {/* Tasks */}
-          <div className="tasks-container grid-cols-1 gap-2">
-            <div className="w-[80%] cursor-move mx-auto mt-2 flex flex-col justify-between items-start bg-yellow-300 rounded-lg border border-blue-300 mb-6 py-5 px-4">
+              {/* Tasks */}
               <div>
-                <h4 className="text-gray-800 font-bold mb-3">
-                  13 things to work on
-                </h4>
-                <p className="text-gray-800 text-sm">
-                  Probabo, inquit, sic agam, ut labore et voluptatem sequi
-                </p>
-              </div>
-
-              <div className="mt-3">
-                <h1>Priority: High</h1>
-              </div>
-
-              <div className="w-full flex flex-col items-start">
-                <div className="flex items-center justify-between text-gray-800 w-full">
-                  <p className="text-sm">Deadline: 20/12/2023</p>
-                  <button
-                    className="w-8 h-8 rounded-full bg-gray-800 text-white flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-offset-2 ring-offset-blue-300  focus:ring-black"
-                    aria-label="edit note"
-                    role="button"
+                {myTasks.map((item, index) => (
+                  <div
+                    className="tasks-container grid-cols-1 gap-2"
+                    key={index}
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="icon icon-tabler icon-tabler-pencil"
-                      width="20"
-                      height="20"
-                      viewBox="0 0 24 24"
-                      strokeWidth="1.5"
-                      stroke="currentColor"
-                      fill="none"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
+                    <div className="w-[80%] cursor-move mx-auto mt-2 flex flex-col justify-between items-start bg-yellow-300 rounded-lg border border-blue-300 mb-6 py-5 px-4">
+                      <div className="w-full">
+                        <div className="flex gap-1 justify-between">
+                          <h4 className="text-gray-800 font-bold mb-3 ">
+                            {item.title}
+                          </h4>
+                          <button
+                            onClick={() => handleDeleteTask(item._id)}
+                            className="w-8 h-8 flex justify-center items-center bg-red-500 p-1 rounded-full"
+                          >
+                            <MdDeleteForever className="text-[40px] text-white" />
+                          </button>
+                        </div>
+                        <p className="text-gray-800 text-sm">
+                          {item.description}
+                        </p>
+                      </div>
+
+                      <div className="my-3">
+                        <h1 className="flex gap-3 justify-center items-center">
+                          <span className="text-gray-700 font-bold">
+                            Priority:
+                          </span>{" "}
+                          <Chip
+                            size="md"
+                            className={`${
+                              (item.priority === "Low" && "bg-green-600") ||
+                              (item.priority === "Moderate" &&
+                                "bg-orange-600") ||
+                              (item.priority === "High" && "bg-red-600")
+                            }`}
+                            value={item.priority}
+                          />
+                        </h1>
+                      </div>
+
+                      <div className="w-full flex flex-col items-start">
+                        <div className="flex items-center justify-between text-gray-800 w-full">
+                          <p className="text-sm text-gray-800 font-bold">
+                            Deadline: {item.deadline}
+                          </p>
+                          <button
+                            onClick={() => handleOpenModal(item)}
+                            className="w-8 h-8 rounded-full bg-gray-800 text-white flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-offset-2 ring-offset-blue-300  focus:ring-black"
+                            aria-label="edit note"
+                            role="button"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="icon icon-tabler icon-tabler-pencil"
+                              width="20"
+                              height="20"
+                              viewBox="0 0 24 24"
+                              strokeWidth="1.5"
+                              stroke="currentColor"
+                              fill="none"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <path stroke="none" d="M0 0h24v24H0z"></path>
+                              <path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4"></path>
+                              <line
+                                x1="13.5"
+                                y1="6.5"
+                                x2="17.5"
+                                y2="10.5"
+                              ></line>
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Update task modal */}
+              <Dialog
+                size="xs"
+                open={open}
+                handler={handleOpenModal}
+                className="bg-transparent shadow-none"
+              >
+                <Card className="mx-auto w-full max-w-[24rem]">
+                  <CardBody className="flex flex-col gap-4">
+                    <Typography variant="h4" color="blue-gray">
+                      Sign In
+                    </Typography>
+
+                    <Input
+                      label="Title"
+                      name="title"
+                      defaultValue={updatedTask?.title}
+                      onChange={handleInputChange}
+                      size="lg"
+                    />
+
+                    <Textarea
+                      label="Description"
+                      defaultValue={updatedTask?.description}
+                      onChange={handleInputChange}
+                      name="description"
+                      size="lg"
+                    />
+
+                    <Input
+                      label="Deadline"
+                      type="date"
+                      defaultValue={updatedTask?.deadline}
+                      onChange={handleInputChange}
+                      name="deadline"
+                      size="lg"
+                    />
+
+                    <label htmlFor="priority_">Priority</label>
+                    <select
+                      label="Priority"
+                      id="priority_"
+                      className="outline-none border border-1 rounded-lg border-gray-400 p-2"
+                      defaultValue={updatedTask?.priority}
+                      onChange={handleInputChange}
+                      name="priority"
                     >
-                      <path stroke="none" d="M0 0h24v24H0z"></path>
-                      <path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4"></path>
-                      <line x1="13.5" y1="6.5" x2="17.5" y2="10.5"></line>
-                    </svg>
-                  </button>
-                </div>
+                      <option value="Low">Low</option>
+                      <option value="Moderate">Moderate</option>
+                      <option value="High">High</option>
+                    </select>
+                  </CardBody>
+                  <CardFooter className="pt-0">
+                    <Button
+                      variant="gradient"
+                      onClick={handleUpdateTask}
+                      fullWidth
+                      disabled={loading ? true : false}
+                    >
+                      {loading ? (
+                        <div className="flex justify-center items-center gap-4">
+                          <ImSpinner9 className="animate-spin text-[20px]" />
+                          Updating
+                        </div>
+                      ) : (
+                        "Update Task"
+                      )}
+                    </Button>
+                  </CardFooter>
+                </Card>
+              </Dialog>
+            </div>
+
+            {/* Ongoing */}
+            <div className="rounded-lg ">
+              <div className="title bg-blue-500 rounded-md rounded-b-none">
+                <h1 className="text-2xl font-bold text-white text-center py-2">
+                  Ongoing
+                </h1>
+              </div>
+            </div>
+
+            {/* Completed */}
+            <div className="rounded-lg ">
+              <div className="title bg-green-500 rounded-md rounded-b-none">
+                <h1 className="text-2xl font-bold text-white text-center py-2">
+                  Completed
+                </h1>
               </div>
             </div>
           </div>
-        </div>
-
-        {/* Ongoing */}
-        <div className="bg-deep-orange-600 h-10"></div>
-
-        {/* Completed */}
-        <div className="bg-lime-500 h-10"></div>
-      </div>
+        </>
+      )}
     </div>
   );
 };

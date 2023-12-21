@@ -29,7 +29,7 @@ const DashboardLayout = () => {
         <div className="flex gap-5 ">
           <SideBar />
           <div className="w-full">
-            <Toaster position="top-right" reverseOrder={false} />
+            <Toaster position="top-center" reverseOrder={false} />
             <Outlet />
           </div>
         </div>
