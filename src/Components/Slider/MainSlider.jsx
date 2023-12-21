@@ -1,6 +1,10 @@
+import { useContext } from "react";
 import { Link } from "react-router-dom";
+import { authContext } from "../../Context/AuthContext";
 
 const MainSlider = () => {
+  let { user } = useContext(authContext);
+
   return (
     <div>
       <div className="flex flex-1 w-full flex-col items-center justify-center text-center px-4 py-20 bg-gradient-to-r from-green-50/50 via-teal-50 to-green-50/50 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800">
@@ -28,7 +32,7 @@ const MainSlider = () => {
           journey toward your goals.
         </h2>
         <Link
-          to="/login"
+          to={user?.email ? "/dashboard/all-task" : "/login"}
           className="bg-orange-600 dark:bg-orange-600 rounded-xl text-white font-bold px-4 py-3 sm:mt-10 mt-8 hover:bg-orange-500 dark:hover:bg-orange-700 transition"
         >
           Let’s Explore

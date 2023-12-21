@@ -1,10 +1,9 @@
 import React, { useContext } from "react";
 import toast from "react-hot-toast";
 import { authContext } from "../../Context/AuthContext";
-import { useNavigate } from "react-router-dom";
 import { Card, Drawer, List, ListItemPrefix } from "@material-tailwind/react";
 import { GiHamburgerMenu } from "react-icons/gi";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { FaPowerOff } from "react-icons/fa6";
 import { IoIosAddCircle, IoMdArrowRoundBack } from "react-icons/io";
 import { FaTasks } from "react-icons/fa";
@@ -12,13 +11,13 @@ import { FaTasks } from "react-icons/fa";
 const SideDrawer = () => {
   const [open, setOpen] = React.useState(false);
 
-  let { logOut } = useContext(authContext);
+  let { logOut, user } = useContext(authContext);
   let navigate = useNavigate();
 
   let handleLogOut = () => {
     logOut()
       .then(() => {
-        navigate("/sign-in");
+        navigate("/");
         toast.success("Successfully Logged out!");
       })
       .catch((error) => {
@@ -37,11 +36,12 @@ const SideDrawer = () => {
         <Drawer open={open} onClose={closeDrawer} className="p-4">
           <Card className="w-full max-w-[20rem] p-4 shadow-xl shadow-blue-gray-900/5">
             <div className="mb-2 p-4">
-              <div>
+              <div className="mb-2 p-4 flex items-center gap-3">
                 <img
-                  src="https://i.ibb.co/q7L0zZ5/fit-Sync-prev-ui.png"
-                  alt=""
+                  src={user?.photoURL}
+                  className="w-[50px] h-[50px] rounded-full object-cover"
                 />
+                <h1 className="text-xl font-bold">{user?.displayName}</h1>
               </div>
             </div>
             <List>

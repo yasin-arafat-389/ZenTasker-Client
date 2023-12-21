@@ -9,14 +9,14 @@ import { useContext } from "react";
 import { authContext } from "../../Context/AuthContext";
 
 const SideBar = () => {
-  let { logOut } = useContext(authContext);
+  let { logOut, user } = useContext(authContext);
   let navigate = useNavigate();
 
   let handleLogOut = () => {
     logOut()
       .then(() => {
-        navigate("/sign-in");
         toast.success("Successfully Logged out!");
+        navigate("/");
       })
       .catch((error) => {
         console.log(error);
@@ -27,8 +27,12 @@ const SideBar = () => {
     <div className="hidden md:hidden lg:block">
       <div>
         <div className="w-full max-w-[20rem] bg-yellow-200 rounded-xl p-4 shadow-xl shadow-blue-gray-900/5">
-          <div className="mb-2 p-4">
-            <img src="https://i.ibb.co/q7L0zZ5/fit-Sync-prev-ui.png" alt="" />
+          <div className="mb-2 p-4 flex items-center gap-3">
+            <img
+              src={user?.photoURL}
+              className="w-[50px] h-[50px] rounded-full object-cover"
+            />
+            <h1 className="text-xl font-bold">{user?.displayName}</h1>
           </div>
           <List>
             <NavLink to="/dashboard/all-task">

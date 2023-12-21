@@ -20,7 +20,6 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: <Home />,
-        loader: () => fetch("../Data.json"),
       },
       {
         path: "/login",
@@ -41,12 +40,8 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "/dashboard",
-    element: (
-      <PrivateRoute>
-        <DashboardLayout />
-      </PrivateRoute>
-    ),
+    path: "/",
+    element: <DashboardLayout />,
     children: [
       {
         path: "/dashboard/all-task",

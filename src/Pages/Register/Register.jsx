@@ -1,13 +1,15 @@
 import { useContext, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { authContext } from "../../Context/AuthContext";
 import swal from "sweetalert";
 import toast from "react-hot-toast";
+import { ImSpinner9 } from "react-icons/im";
 
 const Register = () => {
   let { createUser, logOut, update } = useContext(authContext);
   let navigate = useNavigate();
   const [loader, setLoader] = useState(false);
+  let { user } = useContext(authContext);
 
   let handleRegister = (e) => {
     setLoader(true);
@@ -39,13 +41,13 @@ const Register = () => {
           });
 
         logOut()
-          .then(() => {})
+          .then(() => {
+            toast.success("Registration Successfull!");
+            navigate("/login");
+          })
           .catch((error) => {
             console.log(error);
           });
-
-        toast.success("Registration Successfull!");
-        navigate("/login");
       })
       .catch((error) => {
         console.log(error);
@@ -58,6 +60,10 @@ const Register = () => {
     e.target.email.value = "";
     e.target.password.value = "";
   };
+
+  if (user?.email) {
+    return <Navigate to="/" />;
+  }
 
   return (
     <div>
@@ -168,11 +174,15 @@ const Register = () => {
                     <button
                       type="submit"
                       className="inline-flex items-center justify-center w-full px-4 py-4 text-base font-semibold text-white transition-all duration-200 bg-blue-600 border border-transparent rounded-md focus:outline-none hover:bg-blue-700 focus:bg-blue-700"
+                      disabled={loader ? true : false}
                     >
                       {loader ? (
-                        <span className="loading loading-bars loading-md"></span>
+                        <div className="flex justify-center items-center gap-4">
+                          <ImSpinner9 className="animate-spin text-[20px]" />
+                          Signing Up
+                        </div>
                       ) : (
-                        " Sign up"
+                        "Sign Up"
                       )}
                     </button>
                   </div>

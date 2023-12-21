@@ -40,7 +40,7 @@ const ProfileMenu = () => {
   };
 
   let goToDashboard = () => {
-    navigate("/dashboard");
+    navigate("/dashboard/all-task");
   };
 
   const profileMenuItems = [

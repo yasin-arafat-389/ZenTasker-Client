@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unknown-property */
 import { useContext, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { authContext } from "../../Context/AuthContext";
 import toast from "react-hot-toast";
 import { Button } from "@material-tailwind/react";
@@ -10,6 +10,7 @@ const Login = () => {
   let [loading, setLoading] = useState(false);
   let { login, googleLogin } = useContext(authContext);
   let navigate = useNavigate();
+  let { user } = useContext(authContext);
 
   let handleLogin = (e) => {
     setLoading(true);
@@ -19,7 +20,7 @@ const Login = () => {
 
     login(email, password)
       .then(() => {
-        navigate("/dashboard");
+        navigate("/dashboard/all-task");
         toast.success("Successfully Logged In!!");
       })
       .catch((error) => {
@@ -33,13 +34,17 @@ const Login = () => {
   let handleGoogleLogin = () => {
     googleLogin()
       .then(() => {
-        navigate("/dashboard");
+        navigate("/dashboard/all-task");
         toast.success("Successfully Logged In!!");
       })
       .catch((error) => {
         console.log(error);
       });
   };
+
+  if (user?.email) {
+    return <Navigate to="/" />;
+  }
 
   return (
     <div>
@@ -244,6 +249,7 @@ const Login = () => {
                     <button
                       type="submit"
                       className="bg-deep-orange-500 inline-flex items-center justify-center w-full px-4 py-4 text-base font-semibold text-white transition-all duration-200 border border-transparent rounded-md bg-gradient-to-r from-fuchsia-600 to-blue-600 focus:outline-none hover:opacity-80 focus:opacity-80"
+                      disabled={loading ? true : false}
                     >
                       {loading ? (
                         <div className="flex justify-center items-center gap-4">
