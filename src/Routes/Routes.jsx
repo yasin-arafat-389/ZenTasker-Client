@@ -7,6 +7,9 @@ import Register from "../Pages/Register/Register";
 import PrivateRoute from "./PrivateRoute";
 import Pricing from "../Pages/Pricing/Pricing";
 import WhoIsItFor from "../Pages/WhoIsItFor/WhoIsItFor";
+import DashboardLayout from "../Layouts/DashboardLayout";
+import AllTasks from "../Pages/AllTasks/AllTasks";
+import AddTask from "../Pages/AddTask/AddTask";
 
 const router = createBrowserRouter([
   {
@@ -34,6 +37,32 @@ const router = createBrowserRouter([
       {
         path: "/who-is-it-for",
         element: <WhoIsItFor />,
+      },
+    ],
+  },
+  {
+    path: "/dashboard",
+    element: (
+      <PrivateRoute>
+        <DashboardLayout />
+      </PrivateRoute>
+    ),
+    children: [
+      {
+        path: "/dashboard/all-task",
+        element: (
+          <PrivateRoute>
+            <AllTasks />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/dashboard/add-task",
+        element: (
+          <PrivateRoute>
+            <AddTask />
+          </PrivateRoute>
+        ),
       },
     ],
   },

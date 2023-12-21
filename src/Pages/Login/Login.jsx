@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unknown-property */
 import { useContext, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { authContext } from "../../Context/AuthContext";
 import toast from "react-hot-toast";
 import { Button } from "@material-tailwind/react";
@@ -10,7 +10,6 @@ const Login = () => {
   let [loading, setLoading] = useState(false);
   let { login, googleLogin } = useContext(authContext);
   let navigate = useNavigate();
-  let location = useLocation();
 
   let handleLogin = (e) => {
     setLoading(true);
@@ -20,7 +19,7 @@ const Login = () => {
 
     login(email, password)
       .then(() => {
-        navigate(location?.state ? location.state : "/");
+        navigate("/dashboard");
         toast.success("Successfully Logged In!!");
       })
       .catch((error) => {
@@ -34,7 +33,7 @@ const Login = () => {
   let handleGoogleLogin = () => {
     googleLogin()
       .then(() => {
-        navigate(location?.state ? location.state : "/");
+        navigate("/dashboard");
         toast.success("Successfully Logged In!!");
       })
       .catch((error) => {
@@ -50,7 +49,7 @@ const Login = () => {
             <div className="absolute inset-0">
               <img
                 className="object-cover object-top w-full h-full"
-                src="https://i.ibb.co/Tm8FQrp/marissa-grootes-fl-Rm0z3-MEo-A-unsplash.jpg"
+                src="https://i.ibb.co/qr8bkFs/inventory-list-illustration-concept-on-white-background-vector.jpg"
                 alt=""
               />
             </div>
@@ -59,9 +58,9 @@ const Login = () => {
             <div className="relative">
               <div className="w-full max-w-xl xl:w-full xl:mx-auto xl:pr-24 xl:max-w-xl">
                 <h3 className="text-4xl font-bold text-white">
-                  Join 200+ event professionals &{" "}
+                  Experience Seamless Task Management{" "}
                   <br className="hidden xl:block" />
-                  organize your events
+                  and Boost Your Productivity.
                 </h3>
                 <ul className="grid grid-cols-1 mt-10 sm:grid-cols-2 gap-x-8 gap-y-4">
                   <li className="flex items-center space-x-3">
@@ -81,7 +80,7 @@ const Login = () => {
                     </div>
                     <span className="text-lg font-medium text-white">
                       {" "}
-                      Conferences{" "}
+                      Drag N Drop{" "}
                     </span>
                   </li>
                   <li className="flex items-center space-x-3">
@@ -101,7 +100,7 @@ const Login = () => {
                     </div>
                     <span className="text-lg font-medium text-white">
                       {" "}
-                      Trade Shows{" "}
+                      Add Task{" "}
                     </span>
                   </li>
                   <li className="flex items-center space-x-3">
@@ -121,7 +120,7 @@ const Login = () => {
                     </div>
                     <span className="text-lg font-medium text-white">
                       {" "}
-                      Workshops{" "}
+                      Update Task{" "}
                     </span>
                   </li>
                   <li className="flex items-center space-x-3">
@@ -141,7 +140,7 @@ const Login = () => {
                     </div>
                     <span className="text-lg font-medium text-white">
                       {" "}
-                      Corporate Meetings{" "}
+                      Delete Task{" "}
                     </span>
                   </li>
                 </ul>

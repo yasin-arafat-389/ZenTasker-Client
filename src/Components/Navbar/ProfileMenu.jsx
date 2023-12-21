@@ -7,9 +7,8 @@ import {
   MenuList,
 } from "@material-tailwind/react";
 import React, { useContext } from "react";
-import { AiOutlineUser } from "react-icons/ai";
+import { MdDashboard } from "react-icons/md";
 import { AiOutlinePoweroff } from "react-icons/ai";
-import { TbShoppingBagCheck } from "react-icons/tb";
 import { BsChevronDown } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -40,25 +39,17 @@ const ProfileMenu = () => {
       });
   };
 
-  let goToProfile = () => {
-    navigate("/my-profile");
-  };
-
-  let goToMyOrders = () => {
-    navigate("/my-orders");
+  let goToDashboard = () => {
+    navigate("/dashboard");
   };
 
   const profileMenuItems = [
     {
-      label: "Profile",
-      icon: <AiOutlineUser fontSize={"20px"} />,
-      action: goToProfile,
+      label: "Dashboard",
+      icon: <MdDashboard fontSize={"20px"} />,
+      action: goToDashboard,
     },
-    {
-      label: "Orders",
-      icon: <TbShoppingBagCheck fontSize={"20px"} />,
-      action: goToMyOrders,
-    },
+
     {
       label: "Sign Out",
       icon: <AiOutlinePoweroff fontSize={"20px"} />,
