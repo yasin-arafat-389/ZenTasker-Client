@@ -22,7 +22,7 @@ const ProfileMenu = () => {
   let handleLogOut = () => {
     logOut()
       .then(() => {
-        navigate("/sign-in");
+        navigate("/");
         toast.success(`Successfully Logged Out!!`, {
           style: {
             border: "2px solid green",

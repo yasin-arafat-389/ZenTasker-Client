@@ -18,61 +18,63 @@ const Footer = () => {
           </div>
           <div className="grid grid-cols-2 text-sm gap-x-3 gap-y-8 lg:w-2/3 sm:grid-cols-4">
             <div className="space-y-3">
-              <h3 className="tracki uppercase text-[#000]">Product</h3>
+              <h3 className="tracki uppercase text-[#000]">
+                Productivity Tools
+              </h3>
               <ul className="space-y-1">
                 <li>
                   <a rel="noopener noreferrer" href="#">
-                    Features
+                    ZenTasker Pro
                   </a>
                 </li>
                 <li>
                   <a rel="noopener noreferrer" href="#">
-                    Integrations
+                    Calendar Integration
                   </a>
                 </li>
                 <li>
                   <a rel="noopener noreferrer" href="#">
-                    Pricing
-                  </a>
-                </li>
-                <li>
-                  <a rel="noopener noreferrer" href="#">
-                    FAQ
+                    Project Collaboration
                   </a>
                 </li>
               </ul>
             </div>
             <div className="space-y-3">
-              <h3 className="tracki uppercase text-[#000]">Company</h3>
+              <h3 className="tracki uppercase text-[#000]">User Resources</h3>
               <ul className="space-y-1">
                 <li>
                   <a rel="noopener noreferrer" href="#">
-                    Privacy
+                    Knowledge Base
                   </a>
                 </li>
                 <li>
                   <a rel="noopener noreferrer" href="#">
-                    Terms of Service
+                    Video Tutorials
+                  </a>
+                </li>
+                <li>
+                  <a rel="noopener noreferrer" href="#">
+                    FAQs
                   </a>
                 </li>
               </ul>
             </div>
             <div className="space-y-3">
-              <h3 className="uppercase text-[#000]">Developers</h3>
+              <h3 className="uppercase text-[#000]">Company</h3>
               <ul className="space-y-1">
                 <li>
                   <a rel="noopener noreferrer" href="#">
-                    Public API
+                    About Us
                   </a>
                 </li>
                 <li>
                   <a rel="noopener noreferrer" href="#">
-                    Documentation
+                    Careers
                   </a>
                 </li>
                 <li>
                   <a rel="noopener noreferrer" href="#">
-                    Guides
+                    Contact Information
                   </a>
                 </li>
               </ul>
