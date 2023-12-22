@@ -30,6 +30,7 @@ const AddTask = () => {
     setLoading(true);
 
     data.email = user?.email;
+    data.status = "to do";
 
     await axios.post("http://localhost:5000/add-task", data).then(() => {
       setLoading(false);

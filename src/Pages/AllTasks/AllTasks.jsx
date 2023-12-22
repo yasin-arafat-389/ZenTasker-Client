@@ -1,4 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useContext, useState } from "react";
 import { authContext } from "../../Context/AuthContext";
@@ -19,9 +18,26 @@ import { MdDeleteForever } from "react-icons/md";
 import { Link } from "react-router-dom";
 import swal from "sweetalert";
 import toast from "react-hot-toast";
+import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
+import { useQuery } from "@tanstack/react-query";
 
 const AllTasks = () => {
   let { user } = useContext(authContext);
+  let [statusUpdateLoading, setStatusUpdateLoading] = useState(false);
+
+  let {
+    data: totalTasks = [],
+    isLoading: totalTasksLoading,
+    refetch: totalTasksRefetch,
+  } = useQuery({
+    queryKey: ["myTotalTasks"],
+    queryFn: async () => {
+      let res = await axios
+        .get(`http://localhost:5000/my-tasks/to-do/all?email=${user?.email}`)
+        .then();
+      return res.data;
+    },
+  });
 
   let {
     data: myTasks = [],
@@ -31,7 +47,35 @@ const AllTasks = () => {
     queryKey: ["myTasks"],
     queryFn: async () => {
       let res = await axios
-        .get(`http://localhost:5000/my-tasks?email=${user?.email}`)
+        .get(`http://localhost:5000/my-tasks/to-do?email=${user?.email}`)
+        .then();
+      return res.data;
+    },
+  });
+
+  let {
+    data: ongoingTask = [],
+    isLoading: ongoingLoading,
+    refetch: ongoingRefetch,
+  } = useQuery({
+    queryKey: ["ongoingTasks"],
+    queryFn: async () => {
+      let res = await axios
+        .get(`http://localhost:5000/ongoing-task?email=${user?.email}`)
+        .then();
+      return res.data;
+    },
+  });
+
+  let {
+    data: completedTask = [],
+    isLoading: completedTaskLoading,
+    refetch: completedRefetch,
+  } = useQuery({
+    queryKey: ["completedTasks"],
+    queryFn: async () => {
+      let res = await axios
+        .get(`http://localhost:5000/completed-task?email=${user?.email}`)
         .then();
       return res.data;
     },
@@ -48,6 +92,9 @@ const AllTasks = () => {
       if (willDelete) {
         axios.delete(`http://localhost:5000/delete-task?id=${id}`).then(() => {
           refetch();
+          ongoingRefetch();
+          completedRefetch();
+          totalTasksRefetch();
           toast.success(`Task has been deleted!!`, {
             style: {
               border: "2px solid green",
@@ -105,12 +152,78 @@ const AllTasks = () => {
           },
         });
         setLoading(false);
-        refetch();
         setOpen(!open);
+        refetch();
+        ongoingRefetch();
+        completedRefetch();
       });
   };
 
-  if (myTasksLoading) {
+  // Drag and drop
+  let handleDragAndDrop = (result) => {
+    const { destination, source } = result;
+
+    if (!destination) {
+      return;
+    }
+
+    if (destination.droppableId === source.droppableId) {
+      return;
+    }
+
+    if (destination.droppableId === "OngoingList") {
+      setStatusUpdateLoading(true);
+      axios
+        .post("http://localhost:5000/update-status-to-ongoing", {
+          status: "ongoing",
+          id: result.draggableId,
+        })
+        .then(() => {
+          completedRefetch();
+          ongoingRefetch();
+          refetch();
+          setStatusUpdateLoading(false);
+        });
+    }
+
+    if (destination.droppableId === "CompletedList") {
+      setStatusUpdateLoading(true);
+      axios
+        .post("http://localhost:5000/update-status-to-completed", {
+          status: "completed",
+          id: result.draggableId,
+        })
+        .then(() => {
+          completedRefetch();
+          ongoingRefetch();
+          refetch();
+          setStatusUpdateLoading(false);
+        });
+    }
+
+    if (destination.droppableId === "ToDoList") {
+      setStatusUpdateLoading(true);
+      axios
+        .post("http://localhost:5000/update-status-to-todo", {
+          status: "to do",
+          id: result.draggableId,
+        })
+        .then(() => {
+          completedRefetch();
+          ongoingRefetch();
+          refetch();
+          setStatusUpdateLoading(false);
+        });
+    }
+  };
+
+  if (
+    totalTasksLoading ||
+    myTasksLoading ||
+    ongoingLoading ||
+    completedTaskLoading ||
+    statusUpdateLoading
+  ) {
     return (
       <div className="flex h-screen justify-center items-center">
         <CirclesWithBar
@@ -130,113 +243,140 @@ const AllTasks = () => {
   }
 
   return (
-    <div>
-      {myTasks.length === 0 ? (
-        <div className="flex flex-col justify-center items-center gap-7">
-          <img
-            src="https://i.ibb.co/gFyvdXD/unfinished-task-7557377-6168994.png"
-            className="w-[300px]"
-          />
-          <h1 className="text-2xl font-bold">You currently have no tasks</h1>
-          <Link to="/dashboard/add-task">
-            <Button className="bg-orange-500 text-black text-lg font-bold">
-              Add Task Now
-            </Button>
-          </Link>
-        </div>
-      ) : (
-        <>
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4">
-            {/* To Do */}
-            <div className="rounded-lg ">
-              <div className="title bg-gray-500 rounded-md rounded-b-none">
-                <h1 className="text-2xl font-bold text-white text-center py-2">
-                  To Do
-                </h1>
-              </div>
-
-              {/* Tasks */}
-              <div>
-                {myTasks.map((item, index) => (
+    <DragDropContext onDragEnd={handleDragAndDrop}>
+      <div>
+        {totalTasks.length === 0 ? (
+          <div className="flex flex-col justify-center items-center gap-7">
+            <img
+              src="https://i.ibb.co/gFyvdXD/unfinished-task-7557377-6168994.png"
+              className="w-[300px]"
+            />
+            <h1 className="text-2xl font-bold">You currently have no tasks</h1>
+            <Link to="/dashboard/add-task">
+              <Button className="bg-orange-500 text-black text-lg font-bold">
+                Add Task Now
+              </Button>
+            </Link>
+          </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4">
+              {/* To Do */}
+              <Droppable droppableId="ToDoList">
+                {(provided) => (
                   <div
-                    className="tasks-container grid-cols-1 gap-2"
-                    key={index}
+                    className="rounded-lg "
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
                   >
-                    <div className="w-[80%] cursor-move mx-auto mt-2 flex flex-col justify-between items-start bg-yellow-300 rounded-lg border border-blue-300 mb-6 py-5 px-4">
-                      <div className="w-full">
-                        <div className="flex gap-1 justify-between">
-                          <h4 className="text-gray-800 font-bold mb-3 ">
-                            {item.title}
-                          </h4>
-                          <button
-                            onClick={() => handleDeleteTask(item._id)}
-                            className="w-8 h-8 flex justify-center items-center bg-red-500 p-1 rounded-full"
-                          >
-                            <MdDeleteForever className="text-[40px] text-white" />
-                          </button>
-                        </div>
-                        <p className="text-gray-800 text-sm">
-                          {item.description}
-                        </p>
-                      </div>
+                    <div className="title bg-gray-500 rounded-md rounded-b-none">
+                      <h1 className="text-2xl font-bold text-white text-center py-2">
+                        To Do
+                      </h1>
+                    </div>
 
-                      <div className="my-3">
-                        <h1 className="flex gap-3 justify-center items-center">
-                          <span className="text-gray-700 font-bold">
-                            Priority:
-                          </span>{" "}
-                          <Chip
-                            size="md"
-                            className={`${
-                              (item.priority === "Low" && "bg-green-600") ||
-                              (item.priority === "Moderate" &&
-                                "bg-orange-600") ||
-                              (item.priority === "High" && "bg-red-600")
-                            }`}
-                            value={item.priority}
-                          />
-                        </h1>
-                      </div>
-
-                      <div className="w-full flex flex-col items-start">
-                        <div className="flex items-center justify-between text-gray-800 w-full">
-                          <p className="text-sm text-gray-800 font-bold">
-                            Deadline: {item.deadline}
-                          </p>
-                          <button
-                            onClick={() => handleOpenModal(item)}
-                            className="w-8 h-8 rounded-full bg-gray-800 text-white flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-offset-2 ring-offset-blue-300  focus:ring-black"
-                            aria-label="edit note"
-                            role="button"
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="icon icon-tabler icon-tabler-pencil"
-                              width="20"
-                              height="20"
-                              viewBox="0 0 24 24"
-                              strokeWidth="1.5"
-                              stroke="currentColor"
-                              fill="none"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
+                    {/* Tasks */}
+                    <div className="tasks-container grid-cols-1 gap-2">
+                      {myTasks.map((item, index) => (
+                        <Draggable
+                          key={item?._id}
+                          draggableId={item?._id}
+                          index={index}
+                        >
+                          {(provided) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
                             >
-                              <path stroke="none" d="M0 0h24v24H0z"></path>
-                              <path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4"></path>
-                              <line
-                                x1="13.5"
-                                y1="6.5"
-                                x2="17.5"
-                                y2="10.5"
-                              ></line>
-                            </svg>
-                          </button>
-                        </div>
-                      </div>
+                              <div className="w-[80%] cursor-move mx-auto mt-2 flex flex-col justify-between items-start bg-yellow-300 rounded-lg border border-blue-300 mb-6 py-5 px-4">
+                                <div className="w-full">
+                                  <div className="flex gap-1 justify-between">
+                                    <h4 className="text-gray-800 font-bold mb-3 ">
+                                      {item?.title}
+                                    </h4>
+                                    <button
+                                      onClick={() =>
+                                        handleDeleteTask(item?._id)
+                                      }
+                                      className="w-8 h-8 flex justify-center items-center bg-red-500 p-1 rounded-full"
+                                    >
+                                      <MdDeleteForever className="text-[40px] text-white" />
+                                    </button>
+                                  </div>
+                                  <p className="text-gray-800 text-sm">
+                                    {item?.description}
+                                  </p>
+                                </div>
+
+                                <div className="my-3">
+                                  <h1 className="flex gap-3 justify-center items-center">
+                                    <span className="text-gray-700 font-bold">
+                                      Priority:
+                                    </span>{" "}
+                                    <Chip
+                                      size="md"
+                                      className={`${
+                                        (item?.priority === "Low" &&
+                                          "bg-green-600") ||
+                                        (item?.priority === "Moderate" &&
+                                          "bg-orange-600") ||
+                                        (item?.priority === "High" &&
+                                          "bg-red-600")
+                                      }`}
+                                      value={item?.priority}
+                                    />
+                                  </h1>
+                                </div>
+
+                                <div className="w-full flex flex-col items-start">
+                                  <div className="flex items-center justify-between text-gray-800 w-full">
+                                    <p className="text-sm text-gray-800 font-bold">
+                                      Deadline: {item?.deadline}
+                                    </p>
+                                    <button
+                                      onClick={() => handleOpenModal(item)}
+                                      className="w-8 h-8 rounded-full bg-gray-800 text-white flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-offset-2 ring-offset-blue-300  focus:ring-black"
+                                      aria-label="edit note"
+                                      role="button"
+                                    >
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        className="icon icon-tabler icon-tabler-pencil"
+                                        width="20"
+                                        height="20"
+                                        viewBox="0 0 24 24"
+                                        strokeWidth="1.5"
+                                        stroke="currentColor"
+                                        fill="none"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                      >
+                                        <path
+                                          stroke="none"
+                                          d="M0 0h24v24H0z"
+                                        ></path>
+                                        <path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4"></path>
+                                        <line
+                                          x1="13.5"
+                                          y1="6.5"
+                                          x2="17.5"
+                                          y2="10.5"
+                                        ></line>
+                                      </svg>
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </Draggable>
+                      ))}
+                      {provided.placeholder}
                     </div>
                   </div>
-                ))}
-              </div>
+                )}
+              </Droppable>
 
               {/* Update task modal */}
               <Dialog
@@ -309,29 +449,243 @@ const AllTasks = () => {
                   </CardFooter>
                 </Card>
               </Dialog>
-            </div>
 
-            {/* Ongoing */}
-            <div className="rounded-lg ">
-              <div className="title bg-blue-500 rounded-md rounded-b-none">
-                <h1 className="text-2xl font-bold text-white text-center py-2">
-                  Ongoing
-                </h1>
-              </div>
-            </div>
+              {/* Ongoing */}
+              <Droppable droppableId="OngoingList">
+                {(provided) => (
+                  <div
+                    className="rounded-lg"
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                  >
+                    <div className="title bg-blue-500 rounded-md rounded-b-none">
+                      <h1 className="text-2xl font-bold text-white text-center py-2">
+                        Ongoing
+                      </h1>
+                    </div>
 
-            {/* Completed */}
-            <div className="rounded-lg ">
-              <div className="title bg-green-500 rounded-md rounded-b-none">
-                <h1 className="text-2xl font-bold text-white text-center py-2">
-                  Completed
-                </h1>
-              </div>
+                    <div className="tasks-container grid-cols-1 gap-2">
+                      {ongoingTask?.map((item, index) => (
+                        <Draggable
+                          key={item?._id}
+                          draggableId={item?._id}
+                          index={index}
+                        >
+                          {(provided) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                            >
+                              <div className="w-[80%] cursor-move mx-auto mt-2 flex flex-col justify-between items-start bg-yellow-300 rounded-lg border border-blue-300 mb-6 py-5 px-4">
+                                <div className="w-full">
+                                  <div className="flex gap-1 justify-between">
+                                    <h4 className="text-gray-800 font-bold mb-3 ">
+                                      {item?.title}
+                                    </h4>
+                                    <button
+                                      onClick={() =>
+                                        handleDeleteTask(item?._id)
+                                      }
+                                      className="w-8 h-8 flex justify-center items-center bg-red-500 p-1 rounded-full"
+                                    >
+                                      <MdDeleteForever className="text-[40px] text-white" />
+                                    </button>
+                                  </div>
+                                  <p className="text-gray-800 text-sm">
+                                    {item?.description}
+                                  </p>
+                                </div>
+
+                                <div className="my-3">
+                                  <h1 className="flex gap-3 justify-center items-center">
+                                    <span className="text-gray-700 font-bold">
+                                      Priority:
+                                    </span>{" "}
+                                    <Chip
+                                      size="md"
+                                      className={`${
+                                        (item?.priority === "Low" &&
+                                          "bg-green-600") ||
+                                        (item?.priority === "Moderate" &&
+                                          "bg-orange-600") ||
+                                        (item?.priority === "High" &&
+                                          "bg-red-600")
+                                      }`}
+                                      value={item?.priority}
+                                    />
+                                  </h1>
+                                </div>
+
+                                <div className="w-full flex flex-col items-start">
+                                  <div className="flex items-center justify-between text-gray-800 w-full">
+                                    <p className="text-sm text-gray-800 font-bold">
+                                      Deadline: {item?.deadline}
+                                    </p>
+                                    <button
+                                      onClick={() => handleOpenModal(item)}
+                                      className="w-8 h-8 rounded-full bg-gray-800 text-white flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-offset-2 ring-offset-blue-300  focus:ring-black"
+                                      aria-label="edit note"
+                                      role="button"
+                                    >
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        className="icon icon-tabler icon-tabler-pencil"
+                                        width="20"
+                                        height="20"
+                                        viewBox="0 0 24 24"
+                                        strokeWidth="1.5"
+                                        stroke="currentColor"
+                                        fill="none"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                      >
+                                        <path
+                                          stroke="none"
+                                          d="M0 0h24v24H0z"
+                                        ></path>
+                                        <path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4"></path>
+                                        <line
+                                          x1="13.5"
+                                          y1="6.5"
+                                          x2="17.5"
+                                          y2="10.5"
+                                        ></line>
+                                      </svg>
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </Draggable>
+                      ))}
+                      {provided.placeholder}
+                    </div>
+                  </div>
+                )}
+              </Droppable>
+
+              {/* Completed */}
+              <Droppable droppableId="CompletedList">
+                {(provided) => (
+                  <div
+                    className="rounded-lg"
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                  >
+                    <div className="title bg-green-500 rounded-md rounded-b-none">
+                      <h1 className="text-2xl font-bold text-white text-center py-2">
+                        Completed
+                      </h1>
+                    </div>
+
+                    <div className="tasks-container grid-cols-1 gap-2">
+                      {completedTask?.map((item, index) => (
+                        <Draggable
+                          key={item?._id}
+                          draggableId={item?._id}
+                          index={index}
+                        >
+                          {(provided) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                            >
+                              <div className="w-[80%] cursor-move mx-auto mt-2 flex flex-col justify-between items-start bg-yellow-300 rounded-lg border border-blue-300 mb-6 py-5 px-4">
+                                <div className="w-full">
+                                  <div className="flex gap-1 justify-between">
+                                    <h4 className="text-gray-800 font-bold mb-3 ">
+                                      {item?.title}
+                                    </h4>
+                                    <button
+                                      onClick={() =>
+                                        handleDeleteTask(item?._id)
+                                      }
+                                      className="w-8 h-8 flex justify-center items-center bg-red-500 p-1 rounded-full"
+                                    >
+                                      <MdDeleteForever className="text-[40px] text-white" />
+                                    </button>
+                                  </div>
+                                  <p className="text-gray-800 text-sm">
+                                    {item?.description}
+                                  </p>
+                                </div>
+
+                                <div className="my-3">
+                                  <h1 className="flex gap-3 justify-center items-center">
+                                    <span className="text-gray-700 font-bold">
+                                      Priority:
+                                    </span>{" "}
+                                    <Chip
+                                      size="md"
+                                      className={`${
+                                        (item?.priority === "Low" &&
+                                          "bg-green-600") ||
+                                        (item?.priority === "Moderate" &&
+                                          "bg-orange-600") ||
+                                        (item?.priority === "High" &&
+                                          "bg-red-600")
+                                      }`}
+                                      value={item?.priority}
+                                    />
+                                  </h1>
+                                </div>
+
+                                <div className="w-full flex flex-col items-start">
+                                  <div className="flex items-center justify-between text-gray-800 w-full">
+                                    <p className="text-sm text-gray-800 font-bold">
+                                      Deadline: {item?.deadline}
+                                    </p>
+                                    <button
+                                      onClick={() => handleOpenModal(item)}
+                                      className="w-8 h-8 rounded-full bg-gray-800 text-white flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-offset-2 ring-offset-blue-300  focus:ring-black"
+                                      aria-label="edit note"
+                                      role="button"
+                                    >
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        className="icon icon-tabler icon-tabler-pencil"
+                                        width="20"
+                                        height="20"
+                                        viewBox="0 0 24 24"
+                                        strokeWidth="1.5"
+                                        stroke="currentColor"
+                                        fill="none"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                      >
+                                        <path
+                                          stroke="none"
+                                          d="M0 0h24v24H0z"
+                                        ></path>
+                                        <path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4"></path>
+                                        <line
+                                          x1="13.5"
+                                          y1="6.5"
+                                          x2="17.5"
+                                          y2="10.5"
+                                        ></line>
+                                      </svg>
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </Draggable>
+                      ))}
+                      {provided.placeholder}
+                    </div>
+                  </div>
+                )}
+              </Droppable>
             </div>
-          </div>
-        </>
-      )}
-    </div>
+          </>
+        )}
+      </div>
+    </DragDropContext>
   );
 };
 
