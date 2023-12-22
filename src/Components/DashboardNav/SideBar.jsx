@@ -40,7 +40,7 @@ const SideBar = () => {
                 <ListItemPrefix>
                   <FaTasks fontSize={"20"} />
                 </ListItemPrefix>
-                All Task
+                Manage Task
               </div>
             </NavLink>
 

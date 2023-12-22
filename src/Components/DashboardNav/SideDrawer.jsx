@@ -45,16 +45,16 @@ const SideDrawer = () => {
               </div>
             </div>
             <List>
-              <NavLink to="/dashboard/all-task">
+              <NavLink to="/dashboard/all-task" onClick={closeDrawer}>
                 <div className="flex p-3 font-bold">
                   <ListItemPrefix>
                     <FaTasks fontSize={"20"} />
                   </ListItemPrefix>
-                  All Task
+                  Manage Task
                 </div>
               </NavLink>
 
-              <NavLink to="/dashboard/add-task">
+              <NavLink to="/dashboard/add-task" onClick={closeDrawer}>
                 <div className="flex p-3 font-bold">
                   <ListItemPrefix>
                     <IoIosAddCircle fontSize={"20"} />

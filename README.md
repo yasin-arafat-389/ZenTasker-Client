@@ -1,16 +1,17 @@
 ## About Project
 
-- Project name:- Eventistry
-- [Project live URL](https://event-management-389.surge.sh/)
+- Project name:- ZenTasker
+- [Project live URL](https://zentask-a150d.web.app/)
 
 ## Technologies used
 
-- React (state management, react router)
+- Client Side (React, state management, react-beautiful-dnd, firebase)
+- Server Side (Node, Express, MongoDB)
 
 # Features
 
-- User can see the services we offer in the homepage.
-- User can see details about services by clicking see details button.
-- User can register and login to the website using password authentication.
-- User can also login with gmail.
-- A logged in user can see their profile photo and name in the navigation bar.
+- User can see all the tasks added by them.
+- User can manage tasks by dragging and dropping between To DO, Ongoing, Completed status.
+- User can add new task.
+- User can update task details.
+- User can delete task.

@@ -32,21 +32,23 @@ const AddTask = () => {
     data.email = user?.email;
     data.status = "to do";
 
-    await axios.post("http://localhost:5000/add-task", data).then(() => {
-      setLoading(false);
-      toast.success(`Task Added Successfully 👍`, {
-        style: {
-          border: "2px solid green",
-          padding: "8px",
-          color: "#713200",
-        },
-        iconTheme: {
-          primary: "green",
-          secondary: "#FFFAEE",
-        },
+    await axios
+      .post("https://zen-tasker-server.vercel.app/add-task", data)
+      .then(() => {
+        setLoading(false);
+        toast.success(`Task Added Successfully 👍`, {
+          style: {
+            border: "2px solid green",
+            padding: "8px",
+            color: "#713200",
+          },
+          iconTheme: {
+            primary: "green",
+            secondary: "#FFFAEE",
+          },
+        });
+        navigate("/dashboard/all-task");
       });
-      navigate("/dashboard/all-task");
-    });
   };
 
   useEffect(() => {
@@ -74,7 +76,7 @@ const AddTask = () => {
   }, [errors.title]);
 
   return (
-    <div className="ml-0 md:ml-0 lg:ml-10">
+    <div className="flex justify-center md:justify-center lg:justify-start ml-0 md:ml-0 lg:ml-10">
       <form
         className="mt-8 mb-2 w-80 max-w-screen-lg sm:w-96"
         onSubmit={handleSubmit(onSubmit)}

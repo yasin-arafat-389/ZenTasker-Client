@@ -15,6 +15,7 @@ import {
 } from "@material-tailwind/react";
 import { CirclesWithBar } from "react-loader-spinner";
 import { MdDeleteForever } from "react-icons/md";
+import { FaInfoCircle } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import swal from "sweetalert";
 import toast from "react-hot-toast";
@@ -33,7 +34,9 @@ const AllTasks = () => {
     queryKey: ["myTotalTasks"],
     queryFn: async () => {
       let res = await axios
-        .get(`http://localhost:5000/my-tasks/to-do/all?email=${user?.email}`)
+        .get(
+          `https://zen-tasker-server.vercel.app/my-tasks/to-do/all?email=${user?.email}`
+        )
         .then();
       return res.data;
     },
@@ -47,7 +50,9 @@ const AllTasks = () => {
     queryKey: ["myTasks"],
     queryFn: async () => {
       let res = await axios
-        .get(`http://localhost:5000/my-tasks/to-do?email=${user?.email}`)
+        .get(
+          `https://zen-tasker-server.vercel.app/my-tasks/to-do?email=${user?.email}`
+        )
         .then();
       return res.data;
     },
@@ -61,7 +66,9 @@ const AllTasks = () => {
     queryKey: ["ongoingTasks"],
     queryFn: async () => {
       let res = await axios
-        .get(`http://localhost:5000/ongoing-task?email=${user?.email}`)
+        .get(
+          `https://zen-tasker-server.vercel.app/ongoing-task?email=${user?.email}`
+        )
         .then();
       return res.data;
     },
@@ -75,7 +82,9 @@ const AllTasks = () => {
     queryKey: ["completedTasks"],
     queryFn: async () => {
       let res = await axios
-        .get(`http://localhost:5000/completed-task?email=${user?.email}`)
+        .get(
+          `https://zen-tasker-server.vercel.app/completed-task?email=${user?.email}`
+        )
         .then();
       return res.data;
     },
@@ -90,23 +99,25 @@ const AllTasks = () => {
       dangerMode: true,
     }).then((willDelete) => {
       if (willDelete) {
-        axios.delete(`http://localhost:5000/delete-task?id=${id}`).then(() => {
-          refetch();
-          ongoingRefetch();
-          completedRefetch();
-          totalTasksRefetch();
-          toast.success(`Task has been deleted!!`, {
-            style: {
-              border: "2px solid green",
-              padding: "8px",
-              color: "#713200",
-            },
-            iconTheme: {
-              primary: "green",
-              secondary: "#FFFAEE",
-            },
+        axios
+          .delete(`https://zen-tasker-server.vercel.app/delete-task?id=${id}`)
+          .then(() => {
+            refetch();
+            ongoingRefetch();
+            completedRefetch();
+            totalTasksRefetch();
+            toast.success(`Task has been deleted!!`, {
+              style: {
+                border: "2px solid green",
+                padding: "8px",
+                color: "#713200",
+              },
+              iconTheme: {
+                primary: "green",
+                secondary: "#FFFAEE",
+              },
+            });
           });
-        });
       }
     });
   };
@@ -138,7 +149,7 @@ const AllTasks = () => {
   let handleUpdateTask = async () => {
     setLoading(true);
     await axios
-      .post(`http://localhost:5000/update-task`, updatedTask)
+      .post(`https://zen-tasker-server.vercel.app/update-task`, updatedTask)
       .then(() => {
         toast.success(`Task successfully updated`, {
           style: {
@@ -172,9 +183,15 @@ const AllTasks = () => {
     }
 
     if (destination.droppableId === "OngoingList") {
+      if (source.droppableId === "ToDoList") {
+        myTasks.splice(source.index, 1);
+      } else if (source.droppableId === "CompletedList") {
+        completedTask.splice(source.index, 1);
+      }
+
       setStatusUpdateLoading(true);
       axios
-        .post("http://localhost:5000/update-status-to-ongoing", {
+        .post("https://zen-tasker-server.vercel.app/update-status-to-ongoing", {
           status: "ongoing",
           id: result.draggableId,
         })
@@ -183,28 +200,65 @@ const AllTasks = () => {
           ongoingRefetch();
           refetch();
           setStatusUpdateLoading(false);
+          toast.success(`Task has been moved to Ongoing!!`, {
+            style: {
+              border: "2px solid green",
+              padding: "8px",
+              color: "#713200",
+            },
+            iconTheme: {
+              primary: "green",
+              secondary: "#FFFAEE",
+            },
+          });
         });
     }
 
     if (destination.droppableId === "CompletedList") {
+      if (source.droppableId === "ToDoList") {
+        myTasks.splice(source.index, 1);
+      } else if (source.droppableId === "OngoingList") {
+        ongoingTask.splice(source.index, 1);
+      }
+
       setStatusUpdateLoading(true);
       axios
-        .post("http://localhost:5000/update-status-to-completed", {
-          status: "completed",
-          id: result.draggableId,
-        })
+        .post(
+          "https://zen-tasker-server.vercel.app/update-status-to-completed",
+          {
+            status: "completed",
+            id: result.draggableId,
+          }
+        )
         .then(() => {
           completedRefetch();
           ongoingRefetch();
           refetch();
           setStatusUpdateLoading(false);
+          toast.success(`Task has been moved to Completed!!`, {
+            style: {
+              border: "2px solid green",
+              padding: "8px",
+              color: "#713200",
+            },
+            iconTheme: {
+              primary: "green",
+              secondary: "#FFFAEE",
+            },
+          });
         });
     }
 
     if (destination.droppableId === "ToDoList") {
+      if (source.droppableId === "OngoingList") {
+        ongoingTask.splice(source.index, 1);
+      } else if (source.droppableId === "CompletedList") {
+        completedTask.splice(source.index, 1);
+      }
+
       setStatusUpdateLoading(true);
       axios
-        .post("http://localhost:5000/update-status-to-todo", {
+        .post("https://zen-tasker-server.vercel.app/update-status-to-todo", {
           status: "to do",
           id: result.draggableId,
         })
@@ -213,6 +267,17 @@ const AllTasks = () => {
           ongoingRefetch();
           refetch();
           setStatusUpdateLoading(false);
+          toast.success(`Task has been moved to To Do!!`, {
+            style: {
+              border: "2px solid green",
+              padding: "8px",
+              color: "#713200",
+            },
+            iconTheme: {
+              primary: "green",
+              secondary: "#FFFAEE",
+            },
+          });
         });
     }
   };
@@ -260,16 +325,23 @@ const AllTasks = () => {
           </div>
         ) : (
           <>
+            <div className="flex justify-center items-center gap-2 mb-5">
+              <FaInfoCircle className="text-orange-600 text-xl" />
+              <h1 className="text-gray-600 font-bold">
+                Please drag and drop tasks between three columns to update
+                status of the task
+              </h1>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4">
               {/* To Do */}
               <Droppable droppableId="ToDoList">
                 {(provided) => (
                   <div
-                    className="rounded-lg "
+                    className="rounded-lg border-2 border-gray-500"
                     ref={provided.innerRef}
                     {...provided.droppableProps}
                   >
-                    <div className="title bg-gray-500 rounded-md rounded-b-none">
+                    <div className="title bg-gray-500  rounded-md rounded-b-none">
                       <h1 className="text-2xl font-bold text-white text-center py-2">
                         To Do
                       </h1>
@@ -454,7 +526,7 @@ const AllTasks = () => {
               <Droppable droppableId="OngoingList">
                 {(provided) => (
                   <div
-                    className="rounded-lg"
+                    className="rounded-lg border-2 border-blue-500"
                     ref={provided.innerRef}
                     {...provided.droppableProps}
                   >
@@ -570,7 +642,7 @@ const AllTasks = () => {
               <Droppable droppableId="CompletedList">
                 {(provided) => (
                   <div
-                    className="rounded-lg"
+                    className="rounded-lg border-2 border-green-500"
                     ref={provided.innerRef}
                     {...provided.droppableProps}
                   >
