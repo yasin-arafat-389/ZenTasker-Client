@@ -38,10 +38,10 @@ const SideDrawer = () => {
             <div className="mb-2 p-4">
               <div className="mb-2 p-4 flex items-center gap-3">
                 <img
-                  src={user?.photoURL}
+                  src={user?.photoURL || "https://i.ibb.co/HN9NtYY/user.png"}
                   className="w-[50px] h-[50px] rounded-full object-cover"
                 />
-                <h1 className="text-xl font-bold">{user?.displayName}</h1>
+                <h1 className="text-sm font-bold">{user?.displayName}</h1>
               </div>
             </div>
             <List>

@@ -14,7 +14,7 @@ const WhyChooseUs = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 gap-5 mt-12 sm:grid-cols-3 lg:mt-20 lg:gap-x-12">
+          <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-5 mt-12 lg:mt-20 lg:gap-x-12">
             <div className="transition-all duration-200 bg-cyan-50  shadow-xl hover:shadow-md rounded-lg">
               <div className="py-10 px-9">
                 <img
